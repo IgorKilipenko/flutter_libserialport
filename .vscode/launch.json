@@ -40,6 +40,58 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
-        }
+        },
+        {
+            "name": "example_tests",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "cwd": "example",
+            "windows": {
+                
+            },
+            "runTestsOnDevice": true,
+            "program": "test/widget_test.dart"
+        },
+        {
+            "name": "serial_port__device_tests",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "cwd": "${workspaceRoot}",
+            "windows": {
+                
+            },
+            "runTestsOnDevice": true,
+            "program": "test/flutter_libserialport_test.dart"
+        },
+        {
+            "name": "example__fast_tests",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "cwd": "${workspaceRoot}/example",
+            "windows": {
+                
+            },
+            "env": {
+                "LIBSERIALPORT_PATH": "../test/libs/"
+            },
+            "program": "test"
+        },
+        {
+            "name": "serial_port__fast_tests",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "cwd": "${workspaceRoot}",
+            "windows": {
+                
+            },
+            "env": {
+                "LIBSERIALPORT_PATH": "test/libs/"
+            },
+            "program": "test"
+        },
     ]
 }
