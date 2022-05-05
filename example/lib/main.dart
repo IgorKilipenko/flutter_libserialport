@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
-void main() => runApp(ExampleApp());
+void main() => runApp(const ExampleApp());
 
 class ExampleApp extends StatefulWidget {
+  const ExampleApp({Key? key}) : super(key: key);
+
   @override
-  _ExampleAppState createState() => _ExampleAppState();
+  State<ExampleApp> createState() => _ExampleAppState();
 }
 
 extension IntToString on int {
@@ -71,8 +76,8 @@ class _ExampleAppState extends State<ExampleApp> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.refresh),
           onPressed: initPorts,
+          child: const Icon(Icons.refresh),
         ),
       ),
     );
@@ -83,7 +88,7 @@ class CardListTile extends StatelessWidget {
   final String name;
   final String? value;
 
-  CardListTile(this.name, this.value);
+  const CardListTile(this.name, this.value, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

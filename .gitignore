@@ -11,6 +11,7 @@
 .buildlog/
 .history
 .svn/
+migrate_working_dir/
 
 # IntelliJ related
 *.iml
@@ -19,9 +20,10 @@
 .idea/
 
 # Visual Studio Code related
-.vscode/
+# .vscode/
 
 # Flutter/Dart/Pub related
+/pubspec.lock
 **/doc/api/
 .dart_tool/
 .flutter-plugins
