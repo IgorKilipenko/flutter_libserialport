@@ -22,43 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import 'dart:ffi' as ffi;
 import 'dart:io';
 
-import 'package:flutter_libserialport/src/bindings.dart';
-import 'package:dylib/dylib.dart' as importer;
+// ignore_for_file: no_runtimetype_tostring
 
-LibSerialPort? _dylib;
+class SerialPortError extends OSError {
+  const SerialPortError(
+      [String message = '', int errorCode = OSError.noErrorCode])
+      : super(message, errorCode);
 
-/*
-LibSerialPort get dylib {
-  return _dylib ??= LibSerialPort(ffi.DynamicLibrary.open(
-    importer.resolveDylibPath(
-      'serialport',
-      dartDefine: 'LIBSERIALPORT_PATH',
-      environmentVariable: 'LIBSERIALPORT_PATH',
-    ),
-  ));
-}*/
-
-LibSerialPort get dylib {
-  if (_dylib != null) return _dylib!;
-  String? path;
-  if (Platform.environment.containsKey("FLUTTER_TEST")) {
-    final script = File(Platform.script.path
-        .replaceFirst(RegExp(r'^[/\\]+'), "")
-        .replaceAll(RegExp(r'\\+'), "/"));
-    path = '${script.parent.path}/example/build/windows/runner/Debug'
-        .replaceAll(RegExp(r'[/\\]{2,}'), '/');
+  @override
+  String toString() {
+    return super.toString().replaceFirst('OS Error', runtimeType.toString());
   }
-  _dylib = LibSerialPort(ffi.DynamicLibrary.open(
-    importer.resolveDylibPath(
-      'serialport',
-      path: path,
-      dartDefine: 'LIBSERIALPORT_PATH',
-      environmentVariable: 'LIBSERIALPORT_PATH',
-    ),
-  ));
-
-  return _dylib!;
 }
