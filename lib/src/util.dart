@@ -24,8 +24,6 @@
 
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
-import 'dart:convert';
-import 'package:convert/convert.dart';
 
 import 'package:windows1251/windows1251.dart';
 import 'package:ffi/ffi.dart' as ffi;
