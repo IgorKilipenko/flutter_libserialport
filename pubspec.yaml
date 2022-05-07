@@ -11,15 +11,18 @@ environment:
   flutter: ">=2.5.0"
 
 dependencies:
+  dylib: ^0.3.2+1
+  ffi: ^1.2.0-dev.0
   flutter:
     sdk: flutter
-  libserialport: ^0.2.0+3
   plugin_platform_interface: ^2.0.2
+  windows1251: ^0.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  ffigen: ^5.0.0-dev.1
 
 flutter:
   plugin:
