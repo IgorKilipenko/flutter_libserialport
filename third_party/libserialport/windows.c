@@ -19,7 +19,6 @@
  */
 
 #include "libserialport_internal.h"
-#include <locale.h>
 
 /* USB path is a string of at most 8 decimal numbers < 128 separated by dots. */
 #define MAX_USB_PATH ((8 * 3) + (7 * 1) + 1)
@@ -31,7 +30,6 @@ static char *wc_to_utf8(PWCHAR wc_buffer, ULONG wc_bytes)
 {
 	ULONG wc_length = wc_bytes / sizeof(WCHAR);
 	ULONG utf8_bytes;
-	ULONG utf8_bytes_test;
 	WCHAR *wc_str = NULL;
 	char *utf8_str = NULL;
 
@@ -44,24 +42,17 @@ static char *wc_to_utf8(PWCHAR wc_buffer, ULONG wc_bytes)
 	wc_str[wc_length] = 0;
 
 	/* Compute the size of the UTF-8 converted string. */
-	utf8_bytes_test = WideCharToMultiByte(CP_ACP, NULL, wc_str, -1,
-		NULL, 0, NULL, NULL);
-	if (!(utf8_bytes = wcstombs(NULL, wc_str, 0)))
-	/*WideCharToMultiByte(CP_ACP, NULL, wc_str, -1,
-									NULL, 0, NULL, NULL)))*/
+	if (!(utf8_bytes = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wc_str, -1,
+	                                 NULL, 0, NULL, NULL)))
 		goto wc_to_utf8_end;
-	
-	utf8_bytes++;
 
 	/* Allocate UTF-8 output buffer. */
-	if (!(utf8_str = calloc(utf8_bytes, sizeof(char))))
+	if (!(utf8_str = malloc(utf8_bytes)))
 		goto wc_to_utf8_end;
 
 	/* Actually converted to UTF-8. */
-	/*if (!WideCharToMultiByte(CP_ACP, NULL, wc_str, -1,
-	                         utf8_str, utf8_bytes, NULL, NULL)) {*/
-	if (!wcs2mbs(wc_str, utf8_str, utf8_bytes, 1)) {
-
+	if (!WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wc_str, -1,
+	                         utf8_str, utf8_bytes, NULL, NULL)) {
 		free(utf8_str);
 		utf8_str = NULL;
 		goto wc_to_utf8_end;
@@ -503,7 +494,6 @@ SP_PRIV enum sp_return list_ports(struct sp_port ***list)
 	LSTATUS result;
 	char *name;
 	int name_len;
-	int name_len_test;
 	int ret = SP_OK;
 
 	DEBUG("Opening registry key");
@@ -544,18 +534,16 @@ SP_PRIV enum sp_return list_ports(struct sp_port ***list)
 			data_len = data_size / sizeof(TCHAR);
 			data[data_len] = '\0';
 #ifdef UNICODE
-			name_len_test = WideCharToMultiByte(CP_ACP, 0, data, -1, NULL, 0, NULL, NULL);
-			name_len = wcstombs(NULL, data, 0) + 1;
+			name_len = WideCharToMultiByte(CP_ACP, 0, data, -1, NULL, 0, NULL, NULL);
 #else
 			name_len = data_len + 1;
 #endif
-			if (!(name = calloc(name_len, sizeof(char)))) {
+			if (!(name = malloc(name_len))) {
 				SET_ERROR(ret, SP_ERR_MEM, "Registry port name malloc failed");
 				goto out;
 			}
 #ifdef UNICODE
-			//WideCharToMultiByte(CP_ACP, 0, data, -1, name, name_len, NULL, NULL);
-			wcs2mbs(data, name, name_len, 1);
+			WideCharToMultiByte(CP_ACP, 0, data, -1, name, name_len, NULL, NULL);
 #else
 			strcpy(name, data);
 #endif
@@ -578,33 +566,4 @@ out_close:
 out_done:
 
 	return ret;
-}
-
-int wcs2mbs(const wchar_t* wcpWcs, char* cpMbs, int dBuffLen, int dEncodeType)
-{
-	if (wcpWcs == NULL || wcslen(wcpWcs) == 0)
-	{
-		return 0;
-	}
-
-	//Unicode to GBK
-	if (0 == dEncodeType)
-	{
-		if (NULL == setlocale(LC_ALL, "zh_CN.gbk"))//Set the target string encoding to gbk encoding
-			return -1;
-	}
-	//Unicode to UTF8
-	if (1 == dEncodeType)
-	{
-		if (NULL == setlocale(LC_ALL, ".UTF8"))//Set the target string encoding to utf8 encoding
-			return -1;
-	}
-
-	int dResultByteNum = wcstombs(NULL, wcpWcs, 0);//Calculate the number of bytes to be converted
-	if (dResultByteNum <= 0 || dResultByteNum >= dBuffLen)
-	{
-		return -1;//The conversion failed or the multibyte string buffer size is insufficient
-	}
-	wcstombs(cpMbs, wcpWcs, dBuffLen /* - 1*/);
-	return dResultByteNum;
 }
