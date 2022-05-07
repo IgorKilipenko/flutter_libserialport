@@ -1,0 +1,37 @@
+{
+    //"jest.jestCommandLine": "flutter test --LIBSERIALPORT_PATH=../test/libs/serialport.dll",
+    "jest.nodeEnv": {
+
+    
+    },
+    "jest.enableCodeLens": false,
+    "C_Cpp.clang_format_fallbackStyle": "clang-format",
+    "C_Cpp.clang_format_style": "LLVM",
+    "C_Cpp.default.cppStandard": "c++23",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.default.defines": [
+        "UNICODE",
+        "_UNICODE"
+    ],
+    "C_Cpp.default.intelliSenseMode": "windows-clang-x64",
+    "C_Cpp.experimentalFeatures": "Enabled",
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.intelliSenseEngine": "Tag Parser",
+    "C_Cpp.intelliSenseEngineFallback": "Enabled",
+    "C_Cpp.loggingLevel": "Warning",
+    "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
+    "C_Cpp.vcFormat.newLine.beforeCatch": false,
+    "C_Cpp.vcFormat.newLine.beforeElse": false,
+    "C_Cpp.vcFormat.indent.namespaceContents": false,
+    "C_Cpp.vcFormat.indent.caseContents": false,
+    "C_Cpp.suggestSnippets": false,
+    "C_Cpp.vcFormat.space.afterComma": false,
+    "C_Cpp.vcFormat.space.afterKeywordsInControlFlowStatements": false,
+    "C_Cpp.vcFormat.space.beforeConstructorColon": false,
+    "C_Cpp.vcFormat.space.beforeBlockOpenBrace": false,
+    "C_Cpp.vcFormat.space.beforeInheritanceColon": false,
+    "C_Cpp.vcFormat.space.preserveInInitializerList": false,
+    "C_Cpp.vcFormat.space.removeAroundMemberOperators": false,
+    "C_Cpp.vcFormat.space.removeAroundUnaryOperator": false,
+    "C_Cpp.vcFormat.space.removeBeforeSemicolon": false,
+}
