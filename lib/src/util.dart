@@ -22,10 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
+import 'dart:convert';
+import 'package:convert/convert.dart';
 
+import 'package:windows1251/windows1251.dart';
 import 'package:ffi/ffi.dart' as ffi;
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:flutter_libserialport/src/port.dart';
@@ -35,7 +37,9 @@ typedef UtilFunc<T extends ffi.NativeType> = int Function(ffi.Pointer<T> ptr);
 class Util {
   static int call(int Function() func) {
     final ret = func();
-    if (ret < sp_return.SP_OK && SerialPort.lastError!.errorCode != 0) {
+    if (ret < sp_return.SP_OK &&
+        SerialPort.lastError != null &&
+        SerialPort.lastError!.errorCode != 0) {
       throw SerialPort.lastError!;
     }
     return ret;
@@ -58,7 +62,7 @@ class Util {
     return res;
   }
 
-  static String? fromUtf8(ffi.Pointer<ffi.Int8> str) {
+  /*static String? fromUtf8(ffi.Pointer<ffi.Int8> str) {
     if (str == ffi.nullptr) return null;
     final length = ffi.Utf8Pointer(str.cast()).length;
     try {
@@ -66,7 +70,7 @@ class Util {
     } catch (_) {
       return latin1.decode(str.cast<ffi.Uint8>().asTypedList(length));
     }
-  }
+  }*/
 
   static ffi.Pointer<ffi.Int8> toUtf8(String str) {
     return ffi.StringUtf8Pointer(str).toNativeUtf8().cast<ffi.Int8>();
@@ -79,5 +83,23 @@ class Util {
     ffi.calloc.free(ptr);
     if (rv != sp_return.SP_OK) return null;
     return value;
+  }
+}
+
+extension CharPointerUtils on ffi.Pointer<ffi.Char> {
+  String? toDartStringA({int? length}) {
+    if (address == 0) return null;
+    length ??= this.length;
+    final chars = cast<ffi.Uint8>().asTypedList(length);
+    //cast<ffi.Utf8>().toDartString(length: length);
+    return windows1251.decode(List.from(chars));
+  }
+
+  int get length {
+    var length = 0;
+    while (this[length] != 0) {
+      length++;
+    }
+    return length;
   }
 }
