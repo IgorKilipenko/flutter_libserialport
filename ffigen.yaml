@@ -1,0 +1,36 @@
+name: "LibSerialPort"
+description: "libserialport: cross-platform library for accessing serial ports"
+output: 'lib/src/bindings.dart'
+headers:
+  entry-points:
+    - 'third_party/libserialport/libserialport.h'
+  include-directives:
+    - '**libserialport.h'
+structs:
+  include:
+    - 'sp_.*'
+enums:
+  include:
+    - 'sp_.*'
+macros:
+  include:
+    - 'SP_.*'
+llvm-path:
+  - 'C:\Program Files\llvm'
+compiler-opts:
+  - '-std=c17 -pedantic'
+  - '-m32'
+  - '-DUNICODE'
+#type-map:
+#  native-types:
+#    'lib': 'LibSerialPort'
+#    'c-type': 'Int'
+#    'dart-type': 'Int32'
+type-map:
+  'native-types': # Targets native types.
+    'int':
+      'lib': 'ffi' # predefined import.
+      'c-type': 'Int32'
+      # For native-types dart-type can be be int, double or float
+      # but same otherwise.
+      'dart-type': 'int'
