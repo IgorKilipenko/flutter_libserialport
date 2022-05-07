@@ -75,7 +75,7 @@
                 
             },
             "env": {
-                "LIBSERIALPORT_PATH": "../test/libs/"
+                "LIBSERIALPORT_PATH": "build/windows/runner/Debug"
             },
             "program": "test"
         },
@@ -89,7 +89,7 @@
                 
             },
             "env": {
-                "LIBSERIALPORT_PATH": "test/libs/"
+                "LIBSERIALPORT_PATH": "example/build/windows/runner/Debug"
             },
             "program": "test"
         },
