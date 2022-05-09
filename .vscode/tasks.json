@@ -12,6 +12,18 @@
 			"problemMatcher": [],
 			"label": "flutter: flutter build windows",
 			"detail": "example"
-		}
+		},
+		{
+			"type": "dart",
+			"command": "dart",
+			"args": [
+				"run",
+				"ffigen",
+				"--config",
+				"ffigen.yaml"
+			],
+			"problemMatcher": [],
+			"label": "dart run ffigen --config ffigen.yaml",
+		},
 	]
 }
