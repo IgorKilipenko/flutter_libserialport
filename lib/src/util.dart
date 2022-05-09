@@ -25,6 +25,7 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:windows1251/windows1251.dart';
 import 'package:ffi/ffi.dart' as ffi;
 import 'package:flutter_libserialport/src/bindings.dart';
@@ -85,12 +86,27 @@ class Util {
 }
 
 extension CharPointerUtils on ffi.Pointer<ffi.Char> {
-  String? toDartStringA({int? length}) {
+  String? toDartString({int? length}) {
     if (address == 0) return null;
     length ??= this.length;
-    final chars = cast<ffi.Uint8>().asTypedList(length);
-    //cast<ffi.Utf8>().toDartString(length: length);
-    return windows1251.decode(List.from(chars));
+
+    try {
+      return cast<ffi.Utf8>().toDartString(length: length);
+    } catch (e) {
+      if (kDebugMode) {
+        print('WARN decode UTF8 string with error: $e');
+      }
+    }
+    try {
+      final chars = cast<ffi.Uint8>().asTypedList(length);
+      return windows1251.decode(List.from(chars));
+    } catch (e) {
+      if (kDebugMode) {
+        print('WARN decode Win1251 string with error: $e');
+      }
+    }
+
+    return null;
   }
 
   int get length {
