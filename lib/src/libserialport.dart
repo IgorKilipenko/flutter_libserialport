@@ -61,3 +61,4 @@ export 'enums.dart';
 export 'error.dart';
 export 'port.dart' show SerialPort;
 export 'reader.dart' show SerialPortReader;
+export 'util.dart';

@@ -31,11 +31,11 @@ void main() {
     expect(await flutterLibserialportPlugin.getPlatformVersion(), '42');
   });
 
-  group('Test utils Native', () {
+  /*group('Test utils Native', () {
     test('utils_getLocaleName', () {
       final locale = dylib.utils_geCurrenttLocaleName();
       expect(locale, testing.)
        locale.toDartString()
     });
-  });
+  });*/
 }
