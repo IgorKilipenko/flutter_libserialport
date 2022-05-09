@@ -822,6 +822,7 @@ tags
 ### https://raw.github.com/github/gitignore/340e2fe08a2356c2e3760ff58c3a9e1fddf08060/Global/VisualStudioCode.gitignore
 
 .vscode/*
+!.vscode/c_cpp*.json
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
