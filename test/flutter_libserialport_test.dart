@@ -1,19 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart' as testing;
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:flutter_libserialport/flutter_libserialport_platform_interface.dart';
 import 'package:flutter_libserialport/flutter_libserialport_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:flutter_libserialport/src/dylib.dart';
+import 'package:flutter_libserialport/src/libserialport.dart';
 
-class MockFlutterLibserialportPlatform 
+class MockFlutterLibserialportPlatform
     with MockPlatformInterfaceMixin
     implements FlutterLibserialportPlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }
 
 void main() {
-  final FlutterLibserialportPlatform initialPlatform = FlutterLibserialportPlatform.instance;
+  final FlutterLibserialportPlatform initialPlatform =
+      FlutterLibserialportPlatform.instance;
 
   test('$MethodChannelFlutterLibserialport is the default instance', () {
     expect(initialPlatform, isInstanceOf<MethodChannelFlutterLibserialport>());
@@ -21,9 +24,18 @@ void main() {
 
   test('getPlatformVersion', () async {
     FlutterLibserialport flutterLibserialportPlugin = FlutterLibserialport();
-    MockFlutterLibserialportPlatform fakePlatform = MockFlutterLibserialportPlatform();
+    MockFlutterLibserialportPlatform fakePlatform =
+        MockFlutterLibserialportPlatform();
     FlutterLibserialportPlatform.instance = fakePlatform;
-  
+
     expect(await flutterLibserialportPlugin.getPlatformVersion(), '42');
+  });
+
+  group('Test utils Native', () {
+    test('utils_getLocaleName', () {
+      final locale = dylib.utils_geCurrenttLocaleName();
+      expect(locale, testing.)
+       locale.toDartString()
+    });
   });
 }
