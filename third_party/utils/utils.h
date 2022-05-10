@@ -3,28 +3,22 @@
 
 #include <locale.h>
 
-/** @cond */
-#ifdef _MSC_VER
-/* Microsoft Visual C/C++ compiler in use */
-#ifdef LIBSERIALPORT_MSBUILD
-/* Building the library - need to export DLL symbols */
-#define EXPORT __declspec(dllexport)
-#else
-/* Using the library - need to import DLL symbols */
-#define EXPORT __declspec(dllimport)
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+#ifdef LIBSERIALPORT_MSBUILD
+#define EXPORT __declspec(dllexport) // for Windows DLL
 #else
-/* Some other compiler in use */
-#ifndef LIBSERIALPORT_ATBUILD
-/* Not building the library itself - don't need any special prefixes. */
 #define EXPORT
 #endif
-#endif
-/** @endcond */
 
 
 //EXPORT _locale_t createLocale();
 EXPORT char* utils_geCurrenttLocaleName();
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _SP_UTILS_H

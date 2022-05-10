@@ -29,27 +29,26 @@ import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:dylib/dylib.dart' as importer;
 
 LibSerialPort? _dylib;
-
-/*
-LibSerialPort get dylib {
-  return _dylib ??= LibSerialPort(ffi.DynamicLibrary.open(
-    importer.resolveDylibPath(
-      'serialport',
-      dartDefine: 'LIBSERIALPORT_PATH',
-      environmentVariable: 'LIBSERIALPORT_PATH',
-    ),
-  ));
-}*/
-
 LibSerialPort get dylib {
   if (_dylib != null) return _dylib!;
   String? path;
   if (Platform.environment.containsKey("FLUTTER_TEST")) {
-    final script = File(Platform.script.path
-        .replaceFirst(RegExp(r'^[/\\]+'), "")
-        .replaceAll(RegExp(r'\\+'), "/"));
-    path = '${script.parent.path}/example/build/windows/runner/Debug'
-        .replaceAll(RegExp(r'[/\\]{2,}'), '/');
+    final script =
+        File(Platform.script.toFilePath(windows: Platform.isWindows));
+    String? platformSpecificPath;
+    if (Platform.isLinux) {
+      platformSpecificPath = "example/build/linux/x64/debug/bundle/lib";
+    } else if (Platform.isWindows) {
+      platformSpecificPath = "example/build/windows/runner/Debug";
+    }
+
+    if (platformSpecificPath != null) {
+      final dir = Directory(
+          '${script.parent.path.replaceFirst(RegExp(r'[/\\]example$'), "")}${Platform.pathSeparator}$platformSpecificPath');
+      if (dir.existsSync()) {
+        path = dir.path;
+      }
+    }
   }
   _dylib = LibSerialPort(ffi.DynamicLibrary.open(
     importer.resolveDylibPath(

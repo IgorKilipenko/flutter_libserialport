@@ -13,7 +13,12 @@ import 'package:flutter_libserialport_example/main.dart';
 void main() {
   testWidgets('Verify Platform version', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const ExampleApp());
+
+    const widget = ExampleApp();
+    await tester.pumpWidget(widget);
+
+    expect(widget, isNotNull,
+        reason: 'ExampleApp is NULL');
 
     // Verify that platform version is retrieved.
     /*
