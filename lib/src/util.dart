@@ -26,6 +26,7 @@ import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_libserialport/src/dylib.dart';
 import 'package:windows1251/windows1251.dart';
 import 'package:ffi/ffi.dart' as ffi;
 import 'package:flutter_libserialport/src/bindings.dart';
@@ -61,15 +62,6 @@ class Util {
     return res;
   }
 
-  /*static String? fromUtf8(ffi.Pointer<ffi.Int8> str) {
-    if (str == ffi.nullptr) return null;
-    final length = ffi.Utf8Pointer(str.cast()).length;
-    try {
-      return utf8.decode(str.cast<ffi.Uint8>().asTypedList(length));
-    } catch (_) {
-      return latin1.decode(str.cast<ffi.Uint8>().asTypedList(length));
-    }
-  }*/
 
   static ffi.Pointer<ffi.Int8> toUtf8(String str) {
     return ffi.StringUtf8Pointer(str).toNativeUtf8().cast<ffi.Int8>();
@@ -89,20 +81,23 @@ extension CharPointerUtils on ffi.Pointer<ffi.Char> {
   String? toDartString({int? length}) {
     if (address == 0) return null;
     length ??= this.length;
-
+    final localePtr = dylib.utils_geCurrenttLocaleName();
+    final locale = localePtr.cast<ffi.Utf8>().toDartString();
+    if (locale.contains(RegExp(r'\.1251'))) {
+      try {
+        final chars = cast<ffi.Uint8>().asTypedList(length);
+        return windows1251.decode(List.from(chars));
+      } catch (e) {
+        if (kDebugMode) {
+          print('WARN decode Win1251 string with error: $e');
+        }
+      }
+    }
     try {
       return cast<ffi.Utf8>().toDartString(length: length);
     } catch (e) {
       if (kDebugMode) {
         print('WARN decode UTF8 string with error: $e');
-      }
-    }
-    try {
-      final chars = cast<ffi.Uint8>().asTypedList(length);
-      return windows1251.decode(List.from(chars));
-    } catch (e) {
-      if (kDebugMode) {
-        print('WARN decode Win1251 string with error: $e');
       }
     }
 
