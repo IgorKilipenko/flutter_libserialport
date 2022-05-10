@@ -1,5 +1,5 @@
 
-import 'flutter_libserialport_platform_interface.dart';
+import 'package:flutter_libserialport/flutter_libserialport_platform_interface.dart';
 
 export 'package:flutter_libserialport/src/libserialport.dart';
 //export 'src/config.dart' show SerialPortConfig;
