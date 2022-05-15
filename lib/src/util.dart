@@ -28,7 +28,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_libserialport/src/dylib.dart';
 import 'package:windows1251/windows1251.dart';
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart' as pkg_ffi;
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:flutter_libserialport/src/port.dart';
 
@@ -46,32 +46,32 @@ class Util {
   }
 
   static Uint8List read(int bytes, UtilFunc<ffi.Uint8> readFunc) {
-    final ptr = ffi.calloc<ffi.Uint8>(bytes);
+    final ptr = pkg_ffi.calloc<ffi.Uint8>(bytes);
     final len = call(() => readFunc(ptr));
     final res = Uint8List.fromList(ptr.asTypedList(len));
-    ffi.calloc.free(ptr);
+    pkg_ffi.calloc.free(ptr);
     return res;
   }
 
   static int write(Uint8List bytes, UtilFunc<ffi.Uint8> writeFunc) {
     final len = bytes.length;
-    final ptr = ffi.calloc<ffi.Uint8>(len);
+    final ptr = pkg_ffi.calloc<ffi.Uint8>(len);
     ptr.asTypedList(len).setAll(0, bytes);
     final res = call(() => writeFunc(ptr));
-    ffi.calloc.free(ptr);
+    pkg_ffi.calloc.free(ptr);
     return res;
   }
 
 
   static ffi.Pointer<ffi.Int8> toUtf8(String str) {
-    return ffi.StringUtf8Pointer(str).toNativeUtf8().cast<ffi.Int8>();
+    return pkg_ffi.StringUtf8Pointer(str).toNativeUtf8().cast<ffi.Int8>();
   }
 
   static int? toInt(UtilFunc<ffi.Int32> getFunc) {
-    final ptr = ffi.calloc<ffi.Int32>();
+    final ptr = pkg_ffi.calloc<ffi.Int32>();
     final rv = call(() => getFunc(ptr));
     final value = ptr.value;
-    ffi.calloc.free(ptr);
+    pkg_ffi.calloc.free(ptr);
     if (rv != sp_return.SP_OK) return null;
     return value;
   }
@@ -82,7 +82,7 @@ extension CharPointerUtils on ffi.Pointer<ffi.Char> {
     if (address == 0) return null;
     length ??= this.length;
     final localePtr = dylib.utils_geCurrenttLocaleName();
-    final locale = localePtr.cast<ffi.Utf8>().toDartString();
+    final locale = localePtr.cast<pkg_ffi.Utf8>().toDartString();
     if (locale.contains(RegExp(r'\.1251'))) {
       try {
         final chars = cast<ffi.Uint8>().asTypedList(length);
@@ -94,7 +94,7 @@ extension CharPointerUtils on ffi.Pointer<ffi.Char> {
       }
     }
     try {
-      return cast<ffi.Utf8>().toDartString(length: length);
+      return cast<pkg_ffi.Utf8>().toDartString(length: length);
     } catch (e) {
       if (kDebugMode) {
         print('WARN decode UTF8 string with error: $e');
