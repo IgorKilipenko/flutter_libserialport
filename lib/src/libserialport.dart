@@ -62,3 +62,4 @@ export 'error.dart';
 export 'port.dart' show SerialPort;
 export 'reader.dart' show SerialPortReader;
 export 'util.dart';
+export 'universal_serial.dart' show UartDevice, UniversalSerialPort, UartConfig, BaudRates, DataBits, StopBits, Parities;
