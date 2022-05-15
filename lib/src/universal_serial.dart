@@ -251,6 +251,7 @@ class _SerialPortWrapper implements UniversalSerialPort {
     _instance?.dispose();
     _instance = null;
     _device = null;
+    //_reader?.dispose();
     _reader = null;
   }
 

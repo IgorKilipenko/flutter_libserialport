@@ -36,6 +36,14 @@ import 'package:flutter_libserialport/src/util.dart';
 
 const int _kReadEvents = sp_event.SP_EVENT_RX_READY | sp_event.SP_EVENT_ERROR;
 
+class _SerialPortReaderArgs {
+  final int address;
+  final int timeout;
+  final SendPort sendPort;
+  _SerialPortReaderArgs(
+      {required this.address, required this.timeout, required this.sendPort});
+}
+
 /// Asynchronous serial port reader.
 ///
 /// Provides a [stream] that can be listened to asynchronously to receive data
@@ -46,33 +54,7 @@ const int _kReadEvents = sp_event.SP_EVENT_RX_READY | sp_event.SP_EVENT_ERROR;
 /// successfully opened, the stream will begin emitting [Uint8List] data events.
 ///
 /// **Note:** The reader must be closed using [close()] when done with reading.
-abstract class SerialPortReader {
-  /// Creates a reader for the port. Optional [timeout] parameter can be
-  /// provided to specify a time im milliseconds between attempts to read after
-  /// a failure to open the [port] for reading. If not given, [timeout] defaults
-  /// to 500ms.
-  factory SerialPortReader(SerialPort port, {int? timeout}) =>
-      _SerialPortReaderImpl(port, timeout: timeout);
-
-  /// Gets the port the reader operates on.
-  SerialPort get port;
-
-  /// Gets a stream of data.
-  Stream<Uint8List> get stream;
-
-  /// Closes the stream.
-  Future<void> close();
-}
-
-class _SerialPortReaderArgs {
-  final int address;
-  final int timeout;
-  final SendPort sendPort;
-  _SerialPortReaderArgs(
-      {required this.address, required this.timeout, required this.sendPort});
-}
-
-class _SerialPortReaderImpl implements SerialPortReader {
+class SerialPortReader {
   static const stopFlag = "stop";
   static const startFlag = "start";
   final SerialPort _port;
@@ -83,14 +65,18 @@ class _SerialPortReaderImpl implements SerialPortReader {
   SendPort? _controlPort;
   Stream? _streamOfMesssage;
 
-  _SerialPortReaderImpl(SerialPort port, {int? timeout})
+  /// Creates a reader for the port. Optional [timeout] parameter can be
+  /// provided to specify a time im milliseconds between attempts to read after
+  /// a failure to open the [port] for reading. If not given, [timeout] defaults
+  /// to 500ms.
+  SerialPortReader(SerialPort port, {int? timeout})
       : _port = port,
         _timeout = timeout ?? 500;
 
-  @override
+  /// Gets the port the reader operates on.
   SerialPort get port => _port;
 
-  @override
+  /// Gets a stream of data.
   Stream<Uint8List> get stream => _controller.stream;
 
   StreamController<Uint8List> get _controller {
@@ -130,11 +116,11 @@ class _SerialPortReaderImpl implements SerialPortReader {
     });
   }
 
-  @override
+  /// Closes the stream.
   Future<void> close() async {
     await __controller?.close();
     final success = await Future<bool>(() async {
-      while (_isolate != null) {
+      while (_receiver != null) {
         await Future<void>.delayed(const Duration(milliseconds: 100));
       }
       return _isolate == null;
@@ -149,9 +135,9 @@ class _SerialPortReaderImpl implements SerialPortReader {
   Future<void> _cancelRead() async {
     _controlPort?.send(stopFlag);
     if (_streamOfMesssage != null) {
-      await _streamOfMesssage!
-          .firstWhere((msg) => msg == stopFlag)
-          /*.timeout(const Duration(milliseconds: 1000), onTimeout: () => null)*/;
+      await _streamOfMesssage!.firstWhere((msg) =>
+          msg ==
+          stopFlag) /*.timeout(const Duration(milliseconds: 1000), onTimeout: () => null)*/;
     }
     if (_controlPort != null) {
       _controlPort = null;
@@ -159,9 +145,14 @@ class _SerialPortReaderImpl implements SerialPortReader {
 
     _receiver?.close();
     _receiver = null;
-    _isolate?.kill(priority: Isolate.immediate);
-    _isolate = null;
+    /*_isolate?.kill(priority: Isolate.immediate);
+    _isolate = null;*/
     //await Future<void>.delayed(const Duration(milliseconds: 1000));
+  }
+
+  void dispose() {
+    _isolate?.kill(priority: Isolate.beforeNextEvent);
+    _isolate = null;
   }
 
   static Future<void> _waitRead(_SerialPortReaderArgs args) async {
@@ -222,6 +213,5 @@ class _SerialPortReaderImpl implements SerialPortReader {
 
   static void _releaseEvents(ffi.Pointer<ffi.Pointer<sp_event_set>> events) {
     dylib.sp_free_event_set(events.value);
-    print("[WARN] sp_free_event_set");
   }
 }
