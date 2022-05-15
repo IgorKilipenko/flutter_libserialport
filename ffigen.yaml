@@ -18,7 +18,8 @@ macros:
   include:
     - 'SP_.*'
 llvm-path:
-  - 'C:\Program Files\llvm'
+  - '/lib/llvm-14'
+  - 'C:/Program Files/llvm'
 compiler-opts:
   - '-std=c17 -pedantic'
   - '-m32'
