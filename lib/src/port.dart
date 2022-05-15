@@ -25,7 +25,7 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart' as pkg_ffi;
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:flutter_libserialport/src/config.dart';
 import 'package:flutter_libserialport/src/dylib.dart';
@@ -216,20 +216,20 @@ class _SerialPortImpl implements SerialPort {
   int get address => _port.address;
 
   static ffi.Pointer<sp_port> _init(String name) {
-    final out = ffi.calloc<ffi.Pointer<sp_port>>();
+    final out = pkg_ffi.calloc<ffi.Pointer<sp_port>>();
     final cstr = Util.toUtf8(name);
     Util.call(() => dylib.sp_get_port_by_name(cstr.cast<ffi.Char>(), out));
     final port = out[0];
-    ffi.calloc.free(out);
-    ffi.calloc.free(cstr);
+    pkg_ffi.calloc.free(out);
+    pkg_ffi.calloc.free(cstr);
     return port;
   }
 
   static List<String> get availablePorts {
-    final out = ffi.calloc<ffi.Pointer<ffi.Pointer<sp_port>>>();
+    final out = pkg_ffi.calloc<ffi.Pointer<ffi.Pointer<sp_port>>>();
     final rv = Util.call(() => dylib.sp_list_ports(out));
     if (rv != sp_return.SP_OK) {
-      ffi.calloc.free(out);
+      pkg_ffi.calloc.free(out);
       return <String>[];
     }
     var i = -1;
@@ -394,10 +394,10 @@ class _SerialPortImpl implements SerialPort {
 
   @override
   int get signals {
-    final ptr = ffi.calloc<ffi.Int32>();
+    final ptr = pkg_ffi.calloc<ffi.Int32>();
     Util.call(() => dylib.sp_get_signals(_port, ptr));
     final value = ptr.value;
-    ffi.calloc.free(ptr);
+    pkg_ffi.calloc.free(ptr);
     return value;
   }
 
