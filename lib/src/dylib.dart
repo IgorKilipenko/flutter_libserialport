@@ -25,8 +25,21 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
 
+import 'package:ffi/ffi.dart' as pkg_ffi;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:dylib/dylib.dart' as importer;
+
+typedef _wrappedPrint_C = ffi.Void Function(
+    ffi.Pointer<ffi.Char>, ffi.Size length);
+void wrappedPrint(ffi.Pointer<ffi.Char> arg, int length) {
+  if (kDebugMode) {
+    print(arg.cast<pkg_ffi.Utf8>().toDartString(length: length));
+  }
+}
+
+final wrappedPrintPointer =
+    ffi.Pointer.fromFunction<_wrappedPrint_C>(wrappedPrint);
 
 LibSerialPort? _dylib;
 LibSerialPort get dylib {
@@ -58,6 +71,8 @@ LibSerialPort get dylib {
       environmentVariable: 'LIBSERIALPORT_PATH',
     ),
   ));
-
+  /*dylib.sp_set_debug_handler(wrappedPrintPointer);*/
+  dylib.utils_set_debug_handler(wrappedPrintPointer);
+  dylib.utils_init_debug();
   return _dylib!;
 }
