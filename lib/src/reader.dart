@@ -96,6 +96,9 @@ class SerialPortReader {
   }
 
   void _startRead() {
+    if (_isolate != null) {
+      _kill_isolate();
+    }
     _receiver = ReceivePort();
     final args = _SerialPortReaderArgs(
       address: _port.address,
@@ -135,7 +138,7 @@ class SerialPortReader {
     final result = await _streamOfMesssage!
         .firstWhere((msg) => msg == stopFlag /*|| msg == doneFlag*/)
         .timeout(const Duration(milliseconds: 2000), onTimeout: () => null);
-    return result != null && (result == stopFlag || result == doneFlag );
+    return result != null && (result == stopFlag || result == doneFlag);
   }
 
   /// Closes the stream.
@@ -163,7 +166,7 @@ class SerialPortReader {
     //await Future<void>.delayed(const Duration(milliseconds: 1000));
   }
 
-  void dispose() {
+  void _kill_isolate() {
     _isolate?.kill(priority: Isolate.beforeNextEvent);
     _isolate = null;
   }
@@ -177,7 +180,7 @@ class SerialPortReader {
     bool isEnabled = false;
     bool isClosed = false;
 
-    streamOfControlMesssage.handleError((error) {
+    final streamSubscription = streamOfControlMesssage.handleError((error) {
       args.sendPort.send(IsolateError(error));
     }).listen((message) {
       if (message == startFlag) {
@@ -204,6 +207,7 @@ class SerialPortReader {
         await Future.delayed(const Duration(milliseconds: 100));
       }
       args.sendPort.send(closeFlag);
+      streamSubscription.cancel();
       controlPort.close();
       return;
     });
