@@ -97,7 +97,7 @@ class SerialPortReader {
 
   void _startRead() {
     if (_isolate != null) {
-      _kill_isolate();
+      _killIsolate();
     }
     _receiver = ReceivePort();
     final args = _SerialPortReaderArgs(
@@ -166,7 +166,7 @@ class SerialPortReader {
     //await Future<void>.delayed(const Duration(milliseconds: 1000));
   }
 
-  void _kill_isolate() {
+  void _killIsolate() {
     _isolate?.kill(priority: Isolate.beforeNextEvent);
     _isolate = null;
   }
