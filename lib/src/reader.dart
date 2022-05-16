@@ -44,6 +44,11 @@ class _SerialPortReaderArgs {
       {required this.address, required this.timeout, required this.sendPort});
 }
 
+class IsolateError {
+  final dynamic errorr;
+  IsolateError(this.errorr);
+}
+
 /// Asynchronous serial port reader.
 ///
 /// Provides a [stream] that can be listened to asynchronously to receive data
@@ -57,6 +62,8 @@ class _SerialPortReaderArgs {
 class SerialPortReader {
   static const stopFlag = "stop";
   static const startFlag = "start";
+  static const closeFlag = "close";
+  static const doneFlag = "done";
   final SerialPort _port;
   final int _timeout;
   Isolate? _isolate;
@@ -96,7 +103,7 @@ class SerialPortReader {
       sendPort: _receiver!.sendPort,
     );
     Isolate.spawn(
-      _waitRead,
+      _background,
       args,
       debugName: toString(),
     ).then((value) {
@@ -104,27 +111,37 @@ class SerialPortReader {
       _streamOfMesssage = _receiver!.asBroadcastStream();
       _streamOfMesssage!.first.then((value) {
         _controlPort = value;
+        _controlPort!.send(startFlag);
         _streamOfMesssage!.listen((data) {
-          if (data is SerialPortError) {
+          if (data is SerialPortError || data is IsolateError) {
             _controller.addError(data);
           } else if (data is Uint8List) {
             _controller.add(data);
           }
         });
-        _controlPort!.send(startFlag);
       });
     });
+  }
+
+  Future<bool> _waitCloseReceiver() async {
+    while (_receiver != null) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+    return _receiver == null;
+  }
+
+  Future<bool> _waitStopBackground() async {
+    if (_streamOfMesssage == null) return false;
+    final result = await _streamOfMesssage!
+        .firstWhere((msg) => msg == stopFlag /*|| msg == doneFlag*/)
+        .timeout(const Duration(milliseconds: 2000), onTimeout: () => null);
+    return result != null && (result == stopFlag || result == doneFlag );
   }
 
   /// Closes the stream.
   Future<void> close() async {
     await __controller?.close();
-    final success = await Future<bool>(() async {
-      while (_receiver != null) {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-      }
-      return _isolate == null;
-    });
+    final success = await _waitCloseReceiver();
     if (!success) {
       print("[WARN] Reader not closed.");
     }
@@ -134,11 +151,7 @@ class SerialPortReader {
 
   Future<void> _cancelRead() async {
     _controlPort?.send(stopFlag);
-    if (_streamOfMesssage != null) {
-      await _streamOfMesssage!.firstWhere((msg) =>
-          msg ==
-          stopFlag).timeout(const Duration(milliseconds: 2000), onTimeout: () => null);
-    }
+    await _waitStopBackground();
     if (_controlPort != null) {
       _controlPort = null;
     }
@@ -155,25 +168,59 @@ class SerialPortReader {
     _isolate = null;
   }
 
-  static Future<void> _waitRead(_SerialPortReaderArgs args) async {
+  static Future<void> _background(_SerialPortReaderArgs args) async {
     final controlPort = ReceivePort();
     Stream streamOfControlMesssage = controlPort.asBroadcastStream();
     args.sendPort.send(controlPort.sendPort);
-    bool stopEvents = !((await streamOfControlMesssage
-            .firstWhere((msg) => msg == startFlag || msg == stopFlag)) ==
-        startFlag);
+
+    bool stopEvents = false;
+    bool isEnabled = false;
+    bool isClosed = false;
+
+    streamOfControlMesssage.handleError((error) {
+      args.sendPort.send(IsolateError(error));
+    }).listen((message) {
+      if (message == startFlag) {
+        stopEvents = false;
+        isClosed = false;
+        if (!isEnabled) {
+          isEnabled = true;
+          _waitRead(args, () => !stopEvents, onDone: () {
+            isEnabled = false;
+            args.sendPort.send(stopEvents ? stopFlag : doneFlag);
+          });
+        }
+        args.sendPort.send(startFlag);
+      } else if (message == stopFlag) {
+        stopEvents = true;
+      } else if (message == closeFlag) {
+        stopEvents = true;
+        isClosed = true;
+      }
+    });
+
+    await Future(() async {
+      while (!isClosed) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      args.sendPort.send(closeFlag);
+      controlPort.close();
+      return;
+    });
+  }
+
+  static Future<void> _waitRead(
+      _SerialPortReaderArgs args, bool Function() continueCallback,
+      {void Function()? onDone}) async {
+    bool stopEvents = !continueCallback();
 
     final port = ffi.Pointer<sp_port>.fromAddress(args.address);
     final events = _createEvents(port, _kReadEvents);
     var bytes = 0;
     while (bytes >= 0 && !stopEvents) {
-      final stop = (await streamOfControlMesssage
-              .firstWhere((msg) => msg == stopFlag)
-              .timeout(const Duration(milliseconds: 1),
-                  onTimeout: () => null)) ==
-          stopFlag;
-      if (stop) {
-        stopEvents = true;
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+      stopEvents = !continueCallback();
+      if (stopEvents) {
         continue;
       }
 
@@ -188,7 +235,9 @@ class SerialPortReader {
       }
     }
     _releaseEvents(events);
-    args.sendPort.send(stopFlag);
+    if (onDone != null) {
+      onDone();
+    }
     //await Future<void>.delayed(const Duration(milliseconds: 10));
   }
 
