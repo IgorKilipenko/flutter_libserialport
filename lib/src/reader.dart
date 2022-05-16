@@ -137,7 +137,7 @@ class SerialPortReader {
     if (_streamOfMesssage != null) {
       await _streamOfMesssage!.firstWhere((msg) =>
           msg ==
-          stopFlag) /*.timeout(const Duration(milliseconds: 1000), onTimeout: () => null)*/;
+          stopFlag).timeout(const Duration(milliseconds: 2000), onTimeout: () => null);
     }
     if (_controlPort != null) {
       _controlPort = null;
