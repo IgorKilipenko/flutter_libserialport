@@ -25,16 +25,17 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
 
-import 'package:ffi/ffi.dart' as pkg_ffi;
+import 'package:ffi/ffi.dart' as pkg_ffi hide Utf8Pointer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:dylib/dylib.dart' as importer;
+import 'package:flutter_libserialport/src/util.dart';
 
 typedef _wrappedPrint_C = ffi.Void Function(
     ffi.Pointer<ffi.Char>, ffi.Size length);
 void wrappedPrint(ffi.Pointer<ffi.Char> arg, int length) {
   if (kDebugMode) {
-    print(arg.cast<pkg_ffi.Utf8>().toDartString(length: length));
+    print(arg.cast<ffi.Char>().toDartString(length: length, allowInvalid: true));
   }
 }
 
