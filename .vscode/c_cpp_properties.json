@@ -12,6 +12,29 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-arm64",
             "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/third_party/**",
+                "${workspaceFolder}/third_party/libserialport",
+                "${workspaceFolder}/third_party/libserialport/",
+                "${workspaceFolder}/third_party/libserialport/**",
+                "${workspaceFolder}/third_party/utils/",
+                "${workspaceFolder}/third_party/utils/**",
+                "/lib/llvm-14/lib/clang/14.0.0/include"
+            ],
+            "defines": [
+                "LIBSERIALPORT_ATBUILD"
+            ],
+            "compilerPath": "/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "forcedInclude": [
+                "${workspaceFolder}/third_party/utils/utils.h"
+            ],
+            "mergeConfigurations": true
         }
     ],
     "version": 4
