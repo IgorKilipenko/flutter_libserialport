@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 set(PROJECT_NAME "serialport")
 project(${PROJECT_NAME} LANGUAGES C)
 
-message("Start build for Windows platform")
+message("Start build for Linux platform")
 
 set(SOURCE_PATH "../../third_party/libserialport")
 set(UTILS_PATH "../../third_party/utils")
@@ -15,8 +15,10 @@ add_library(${PROJECT_NAME} SHARED
   "${UTILS_PATH}/utils.c"
 )
 
+list(APPEND COMPILE_OPTIONS -Wall -Wextra -pedantic -Wmissing-prototypes -Wshadow)
+
 target_compile_options(${PROJECT_NAME} PRIVATE
-  -std=c17 -Wall -Wextra -pedantic -Wmissing-prototypes -Wshadow)
+  ${COMPILE_OPTIONS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE LIBSERIALPORT_ATBUILD)
 target_include_directories(${PROJECT_NAME} PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"

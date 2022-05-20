@@ -17,7 +17,8 @@ add_library(${PROJECT_NAME} SHARED
 #target_compile_options(${PROJECT_NAME} PRIVATE
 #  -std=c99 -Wall -Wextra -pedantic -Wmissing-prototypes -Wshadow)
 target_compile_definitions(${PROJECT_NAME} PRIVATE LIBSERIALPORT_MSBUILD)
-target_compile_options(${PROJECT_NAME} PRIVATE -std=c17)
+target_compile_options(${PROJECT_NAME} PRIVATE
+  ${COMPILE_OPTIONS})
 #target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _WIN32)
 #target_compile_options(${PROJECT_NAME} PRIVATE -g)
 target_include_directories(${PROJECT_NAME} PRIVATE

@@ -11,6 +11,8 @@ extern char* utils_geCurrenttLocaleName() {
 	return localeStr;
 }
 
+#if !defined(UNIVERSAL_SERIAL)
+
 extern void utils_printf(const char *format, ...) {
 	va_list args;
 	va_start(args, format);
@@ -38,3 +40,4 @@ extern void utils_init_debug() {
 	}
 }
 
+#endif

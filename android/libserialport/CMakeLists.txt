@@ -8,6 +8,7 @@ message("Start build for Android platform")
 
 set(UTILS_PATH "../../third_party/utils")
 set(LIBS "${UTILS_PATH}/utils.c")
+set(DEFS LIBSERIALPORT_ATBUILD)
 set(INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/${UTILS_PATH}")
 
 if (NOT DEFINED UNIVERSAL_SERIAL)
@@ -22,15 +23,20 @@ if (NOT DEFINED UNIVERSAL_SERIAL)
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_PATH}"
   )
+else()
+  list(APPEND DEFS UNIVERSAL_SERIAL)
 endif()
+
+list(APPEND COMPILE_OPTIONS -Wall -Wextra -pedantic -Wmissing-prototypes -Wshadow)
+
 
 add_library(${PROJECT_NAME} SHARED
   ${LIBS}
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
-  -std=c17 -Wall -Wextra -pedantic -Wmissing-prototypes -Wshadow)
-target_compile_definitions(${PROJECT_NAME} PRIVATE LIBSERIALPORT_ATBUILD)
+  ${COMPILE_OPTIONS})
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFS})
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${INCLUDES}
 )
