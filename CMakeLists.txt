@@ -15,9 +15,7 @@ set(DEFS "")
 set(SOURCE_PATH "../../third_party/libserialport")
 set(UTILS_PATH "../../third_party/utils")
 
-set(LIBS   
-    "${SOURCE_PATH}/linux.c"
-    "${SOURCE_PATH}/linux_termios.c"
+set(LIBS 
     "${SOURCE_PATH}/serialport.c"
     "${SOURCE_PATH}/timing.c"
     "${UTILS_PATH}/utils.h"

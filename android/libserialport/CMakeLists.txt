@@ -10,6 +10,11 @@ if (DEFINED UNIVERSAL_SERIAL AND UNIVERSAL_SERIAL)
   set(LIBS "${UTILS_PATH}/utils.c")
   set(INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/${UTILS_PATH}")
   list(APPEND DEFS UNIVERSAL_SERIAL)
+else()
+  list(APPEND LIBS 
+    "${SOURCE_PATH}/linux.c"
+    "${SOURCE_PATH}/linux_termios.c"
+  )
 endif()
 
 add_library(${PROJECT_NAME} SHARED
