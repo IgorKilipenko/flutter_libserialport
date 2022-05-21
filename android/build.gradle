@@ -31,6 +31,11 @@ android {
 
     defaultConfig {
         minSdkVersion 16
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_VERBOSE_MAKEFILE=ON", "-DUNIVERSAL_SERIAL=ON"
+            }
+        }
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -39,5 +44,14 @@ android {
         cmake {
             path "libserialport/CMakeLists.txt"
         }
+        println("CMake path: " + cmake.path)
     }
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation"
+        }
+    }   
 }

@@ -1,34 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
-set(PROJECT_NAME "serialport")
-project(${PROJECT_NAME} LANGUAGES C)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeLists.txt")
 
 message("Start build for Android platform")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeLists.txt")
 
-set(UTILS_PATH "../../third_party/utils")
-set(LIBS "${UTILS_PATH}/utils.c")
-set(DEFS LIBSERIALPORT_ATBUILD)
-set(INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/${UTILS_PATH}")
-
-if (NOT DEFINED UNIVERSAL_SERIAL)
-  set(SOURCE_PATH "../../third_party/libserialport")
-  list(APPEND LIBS
-    "${SOURCE_PATH}/linux.c"
-    "${SOURCE_PATH}/linux_termios.c"
-    "${SOURCE_PATH}/serialport.c"
-    "${SOURCE_PATH}/timing.c"
-  )
-  list(APPEND INCLUDES
-    "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_PATH}"
-  )
-else()
-  list(APPEND DEFS UNIVERSAL_SERIAL)
-endif()
-
+list(APPEND DEFS LIBSERIALPORT_ATBUILD)
 list(APPEND COMPILE_OPTIONS -Wall -Wextra -pedantic -Wmissing-prototypes -Wshadow)
 
+if (DEFINED UNIVERSAL_SERIAL AND UNIVERSAL_SERIAL)
+  set(LIBS "${UTILS_PATH}/utils.c")
+  set(INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/${UTILS_PATH}")
+  list(APPEND DEFS UNIVERSAL_SERIAL)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${LIBS}
@@ -38,5 +20,5 @@ target_compile_options(${PROJECT_NAME} PRIVATE
   ${COMPILE_OPTIONS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFS})
 target_include_directories(${PROJECT_NAME} PRIVATE
-  ${INCLUDES}
+  ${INCLUDE_DIRS}
 )
