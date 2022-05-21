@@ -18,7 +18,6 @@ set(UTILS_PATH "../../third_party/utils")
 set(LIBS 
     "${SOURCE_PATH}/serialport.c"
     "${SOURCE_PATH}/timing.c"
-    "${UTILS_PATH}/utils.h"
     "${UTILS_PATH}/utils.c"
 )
 
