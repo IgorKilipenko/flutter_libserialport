@@ -13,7 +13,11 @@ extern char* utils_geCurrenttLocaleName() {
 
 #if !defined(UNIVERSAL_SERIAL)
 
+static void (*utils_debug_handler)(const char *format, size_t length) = NULL;
+
 extern void utils_printf(const char *format, ...) {
+	if (utils_debug_handler == NULL) return;
+
 	va_list args;
 	va_start(args, format);
 	int len = vsnprintf(NULL, 0, format, args);

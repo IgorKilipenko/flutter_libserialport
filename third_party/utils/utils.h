@@ -18,13 +18,13 @@ extern "C" {
 #define EXPORT
 #endif
 
-EXPORT char* utils_geCurrenttLocaleName();
+EXPORT char* utils_geCurrenttLocaleName(void);
 
 #if !defined(UNIVERSAL_SERIAL)
-static void (*utils_debug_handler)(const char *format, size_t length);
+//void (*utils_debug_handler)(const char *format, size_t length);
 EXPORT void utils_printf(const char *format, ...) ;
 EXPORT void utils_set_debug_handler(void (const char *str, size_t length));
-EXPORT void utils_init_debug();
+EXPORT void utils_init_debug(void);
 #endif
 
 #ifdef __cplusplus
