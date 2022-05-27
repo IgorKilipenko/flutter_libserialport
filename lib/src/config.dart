@@ -24,7 +24,7 @@
 
 import 'dart:ffi' as ffi;
 
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart' as pkg_ffi;
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:flutter_libserialport/src/dylib.dart';
 import 'package:flutter_libserialport/src/util.dart';
@@ -197,10 +197,10 @@ class _SerialPortConfigImpl implements SerialPortConfig {
   int get address => _config.address;
 
   static ffi.Pointer<sp_port_config> _init() {
-    final out = ffi.calloc<ffi.Pointer<sp_port_config>>();
+    final out = pkg_ffi.calloc<ffi.Pointer<sp_port_config>>();
     Util.call(() => dylib.sp_new_config(out));
     final config = out[0];
-    ffi.calloc.free(out);
+    pkg_ffi.calloc.free(out);
     return config;
   }
 

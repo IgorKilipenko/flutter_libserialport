@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_test/flutter_test.dart' as testing;
 import 'package:flutter_libserialport/flutter_libserialport.dart';
@@ -31,11 +32,13 @@ void main() {
     expect(await flutterLibserialportPlugin.getPlatformVersion(), '42');
   });
 
-  /*group('Test utils Native', () {
+  group('Test utils Native', () {
     test('utils_getLocaleName', () {
-      final locale = dylib.utils_geCurrenttLocaleName();
-      expect(locale, testing.)
-       locale.toDartString()
+      final localePtr = dylib.utils_geCurrenttLocaleName();
+      expect(localePtr.address, testing.isNot(0), reason: 'Loacle is null pointer');
+      if (kDebugMode) {
+        print('Locale name : ${localePtr.toDartString()}');
+      }
     });
-  });*/
+  });
 }

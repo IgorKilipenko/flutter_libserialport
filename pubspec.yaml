@@ -7,8 +7,8 @@ repository: https://github.com/jpnurmi/flutter_libserialport
 issue_tracker: https://github.com/jpnurmi/flutter_libserialport/issues
 
 environment:
-  sdk: ">=2.17.0-266.5.beta <3.0.0"
-  flutter: ">=2.5.0"
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   dylib: ^0.3.2+1
@@ -16,13 +16,14 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
+  usb_serial: ^0.4.0
   windows1251: ^0.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  ffigen: ^5.0.0-dev.1
+  ffigen: ^5.0.0
 
 flutter:
   plugin:

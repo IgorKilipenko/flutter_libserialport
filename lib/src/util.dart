@@ -22,12 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_libserialport/src/dylib.dart';
 import 'package:windows1251/windows1251.dart';
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart' as pkg_ffi hide Utf8Pointer;
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:flutter_libserialport/src/port.dart';
 
@@ -45,64 +47,60 @@ class Util {
   }
 
   static Uint8List read(int bytes, UtilFunc<ffi.Uint8> readFunc) {
-    final ptr = ffi.calloc<ffi.Uint8>(bytes);
+    final ptr = pkg_ffi.calloc<ffi.Uint8>(bytes);
     final len = call(() => readFunc(ptr));
     final res = Uint8List.fromList(ptr.asTypedList(len));
-    ffi.calloc.free(ptr);
+    pkg_ffi.calloc.free(ptr);
     return res;
   }
 
   static int write(Uint8List bytes, UtilFunc<ffi.Uint8> writeFunc) {
     final len = bytes.length;
-    final ptr = ffi.calloc<ffi.Uint8>(len);
+    final ptr = pkg_ffi.calloc<ffi.Uint8>(len);
     ptr.asTypedList(len).setAll(0, bytes);
     final res = call(() => writeFunc(ptr));
-    ffi.calloc.free(ptr);
+    pkg_ffi.calloc.free(ptr);
     return res;
   }
 
-  /*static String? fromUtf8(ffi.Pointer<ffi.Int8> str) {
-    if (str == ffi.nullptr) return null;
-    final length = ffi.Utf8Pointer(str.cast()).length;
-    try {
-      return utf8.decode(str.cast<ffi.Uint8>().asTypedList(length));
-    } catch (_) {
-      return latin1.decode(str.cast<ffi.Uint8>().asTypedList(length));
-    }
-  }*/
-
   static ffi.Pointer<ffi.Int8> toUtf8(String str) {
-    return ffi.StringUtf8Pointer(str).toNativeUtf8().cast<ffi.Int8>();
+    return pkg_ffi.StringUtf8Pointer(str).toNativeUtf8().cast<ffi.Int8>();
   }
 
   static int? toInt(UtilFunc<ffi.Int32> getFunc) {
-    final ptr = ffi.calloc<ffi.Int32>();
+    final ptr = pkg_ffi.calloc<ffi.Int32>();
     final rv = call(() => getFunc(ptr));
     final value = ptr.value;
-    ffi.calloc.free(ptr);
+    pkg_ffi.calloc.free(ptr);
     if (rv != sp_return.SP_OK) return null;
     return value;
   }
 }
 
 extension CharPointerUtils on ffi.Pointer<ffi.Char> {
-  String? toDartString({int? length}) {
+  String? toDartString({int? length, bool? allowInvalid}) {
     if (address == 0) return null;
     length ??= this.length;
-
-    try {
-      return cast<ffi.Utf8>().toDartString(length: length);
-    } catch (e) {
-      if (kDebugMode) {
-        print('WARN decode UTF8 string with error: $e');
+    final localePtr = dylib.utils_geCurrenttLocaleName();
+    final locale = localePtr
+        .cast<pkg_ffi.Utf8>()
+        .toDartString();
+    if (locale.contains(RegExp(r'\.1251'))) {
+      try {
+        final chars = cast<ffi.Uint8>().asTypedList(length);
+        return windows1251.decode(List.from(chars), allowInvalid: allowInvalid);
+      } catch (e) {
+        if (kDebugMode) {
+          print('WARN decode Win1251 string with error: $e');
+        }
       }
     }
     try {
-      final chars = cast<ffi.Uint8>().asTypedList(length);
-      return windows1251.decode(List.from(chars));
+      return cast<pkg_ffi.Utf8>()
+          .toDartString(length: length, allowMalformed: allowInvalid);
     } catch (e) {
       if (kDebugMode) {
-        print('WARN decode Win1251 string with error: $e');
+        print('WARN decode UTF8 string with error: $e');
       }
     }
 
@@ -115,5 +113,45 @@ extension CharPointerUtils on ffi.Pointer<ffi.Char> {
       length++;
     }
     return length;
+  }
+}
+
+extension Utf8PointerUtils on ffi.Pointer<pkg_ffi.Utf8> {
+  /// Converts this UTF-8 encoded string to a Dart string.
+  ///
+  /// Decodes the UTF-8 code units of this zero-terminated byte array as
+  /// Unicode code points and creates a Dart string containing those code
+  /// points.
+  ///
+  /// If [length] is provided, zero-termination is ignored and the result can
+  /// contain NUL characters.
+  ///
+  /// If [length] is not provided, the returned string is the string up til
+  /// but not including  the first NUL character.
+  String toDartString({int? length, bool? allowMalformed}) {
+    _ensureNotNullptr('toDartString');
+    final codeUnits = cast<ffi.Uint8>();
+    if (length != null) {
+      RangeError.checkNotNegative(length, 'length');
+    } else {
+      length = _length(codeUnits);
+    }
+    return utf8.decode(codeUnits.asTypedList(length),
+        allowMalformed: allowMalformed);
+  }
+
+  static int _length(ffi.Pointer<ffi.Uint8> codeUnits) {
+    var length = 0;
+    while (codeUnits[length] != 0) {
+      length++;
+    }
+    return length;
+  }
+
+  void _ensureNotNullptr(String operation) {
+    if (this == ffi.nullptr) {
+      throw UnsupportedError(
+          "Operation '$operation' not allowed on a 'nullptr'.");
+    }
   }
 }

@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "flutter_serial_port",
+            "name": "flutter_libserialport",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "flutter_serial_port (profile mode)",
+            "name": "flutter_libserialport (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "flutter_serial_port (release mode)",
+            "name": "flutter_libserialport (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

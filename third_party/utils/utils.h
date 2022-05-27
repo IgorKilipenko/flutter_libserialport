@@ -1,30 +1,34 @@
 #ifndef _SP_UTILS_H
 #define _SP_UTILS_H
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <locale.h>
-
-/** @cond */
-#ifdef _MSC_VER
-/* Microsoft Visual C/C++ compiler in use */
-#ifdef LIBSERIALPORT_MSBUILD
-/* Building the library - need to export DLL symbols */
-#define EXPORT __declspec(dllexport)
-#else
-/* Using the library - need to import DLL symbols */
-#define EXPORT __declspec(dllimport)
+#if !defined(UNIVERSAL_SERIAL)
+#include "libserialport_internal.h"
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef LIBSERIALPORT_MSBUILD
+#define EXPORT __declspec(dllexport) // for Windows DLL
 #else
-/* Some other compiler in use */
-#ifndef LIBSERIALPORT_ATBUILD
-/* Not building the library itself - don't need any special prefixes. */
 #define EXPORT
 #endif
-#endif
-/** @endcond */
 
-
-//EXPORT _locale_t createLocale();
 EXPORT char* utils_geCurrenttLocaleName();
 
+#if !defined(UNIVERSAL_SERIAL)
+static void (*utils_debug_handler)(const char *format, size_t length);
+EXPORT void utils_printf(const char *format, ...) ;
+EXPORT void utils_set_debug_handler(void (const char *str, size_t length));
+EXPORT void utils_init_debug();
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _SP_UTILS_H

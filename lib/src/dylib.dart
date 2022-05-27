@@ -25,31 +25,44 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
 
+import 'package:ffi/ffi.dart' as pkg_ffi hide Utf8Pointer;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_libserialport/src/bindings.dart';
 import 'package:dylib/dylib.dart' as importer;
+import 'package:flutter_libserialport/src/util.dart';
+
+typedef _wrappedPrint_C = ffi.Void Function(
+    ffi.Pointer<ffi.Char>, ffi.Size length);
+void wrappedPrint(ffi.Pointer<ffi.Char> arg, int length) {
+  if (kDebugMode) {
+    print(arg.cast<ffi.Char>().toDartString(length: length, allowInvalid: true));
+  }
+}
+
+final wrappedPrintPointer =
+    ffi.Pointer.fromFunction<_wrappedPrint_C>(wrappedPrint);
 
 LibSerialPort? _dylib;
-
-/*
-LibSerialPort get dylib {
-  return _dylib ??= LibSerialPort(ffi.DynamicLibrary.open(
-    importer.resolveDylibPath(
-      'serialport',
-      dartDefine: 'LIBSERIALPORT_PATH',
-      environmentVariable: 'LIBSERIALPORT_PATH',
-    ),
-  ));
-}*/
-
 LibSerialPort get dylib {
   if (_dylib != null) return _dylib!;
   String? path;
   if (Platform.environment.containsKey("FLUTTER_TEST")) {
-    final script = File(Platform.script.path
-        .replaceFirst(RegExp(r'^[/\\]+'), "")
-        .replaceAll(RegExp(r'\\+'), "/"));
-    path = '${script.parent.path}/example/build/windows/runner/Debug'
-        .replaceAll(RegExp(r'[/\\]{2,}'), '/');
+    final script =
+        File(Platform.script.toFilePath(windows: Platform.isWindows));
+    String? platformSpecificPath;
+    if (Platform.isLinux) {
+      platformSpecificPath = "example/build/linux/x64/debug/bundle/lib";
+    } else if (Platform.isWindows) {
+      platformSpecificPath = "example/build/windows/runner/Debug";
+    }
+
+    if (platformSpecificPath != null) {
+      final dir = Directory(
+          '${script.parent.path.replaceFirst(RegExp(r'[/\\]example$'), "")}${Platform.pathSeparator}$platformSpecificPath');
+      if (dir.existsSync()) {
+        path = dir.path;
+      }
+    }
   }
   _dylib = LibSerialPort(ffi.DynamicLibrary.open(
     importer.resolveDylibPath(
@@ -59,6 +72,8 @@ LibSerialPort get dylib {
       environmentVariable: 'LIBSERIALPORT_PATH',
     ),
   ));
-
+  /*dylib.sp_set_debug_handler(wrappedPrintPointer);*/
+  dylib.utils_set_debug_handler(wrappedPrintPointer);
+  dylib.utils_init_debug();
   return _dylib!;
 }
