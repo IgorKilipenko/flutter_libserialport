@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "xlocale": "c"
+        "**.c": "c",
+        "**.h": "c"
     },
     "scm.diffDecorationsGutterPattern": {
         "added": true,
