@@ -16,24 +16,16 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/third_party/**",
-                "${workspaceFolder}/third_party/libserialport",
-                "${workspaceFolder}/third_party/libserialport/",
-                "${workspaceFolder}/third_party/libserialport/**",
-                "${workspaceFolder}/third_party/utils/",
-                "${workspaceFolder}/third_party/utils/**",
-                "/lib/llvm-14/lib/clang/14.0.0/include"
+                "${workspaceFolder}/third_party/**"
             ],
             "defines": [
                 "LIBSERIALPORT_ATBUILD"
             ],
             "compilerPath": "/bin/clang++",
             "cStandard": "c17",
-            "cppStandard": "c++14",
+            "cppStandard": "c++17",
             "intelliSenseMode": "linux-clang-x64",
-            "forcedInclude": [
-                "${workspaceFolder}/third_party/utils/utils.h"
-            ],
+            "forcedInclude": [],
             "mergeConfigurations": true
         }
     ],
