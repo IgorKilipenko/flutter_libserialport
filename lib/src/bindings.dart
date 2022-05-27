@@ -2180,6 +2180,118 @@ class LibSerialPort {
   late final _sp_get_lib_version_string = _sp_get_lib_version_stringPtr
       .asFunction<ffi.Pointer<ffi.Char> Function()>();
 
+  int get_termios_get_ioctl() {
+    return _get_termios_get_ioctl();
+  }
+
+  late final _get_termios_get_ioctlPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>(
+          'get_termios_get_ioctl');
+  late final _get_termios_get_ioctl =
+      _get_termios_get_ioctlPtr.asFunction<int Function()>();
+
+  int get_termios_set_ioctl() {
+    return _get_termios_set_ioctl();
+  }
+
+  late final _get_termios_set_ioctlPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>(
+          'get_termios_set_ioctl');
+  late final _get_termios_set_ioctl =
+      _get_termios_set_ioctlPtr.asFunction<int Function()>();
+
+  late final ffi.Pointer<ffi.Int32> _size_t = _lookup<ffi.Int32>('size_t');
+
+  int get size_t => _size_t.value;
+
+  set size_t(int value) => _size_t.value = value;
+
+  int get_termios_speed(
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    return _get_termios_speed(
+      data,
+    );
+  }
+
+  late final _get_termios_speedPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
+          'get_termios_speed');
+  late final _get_termios_speed =
+      _get_termios_speedPtr.asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+
+  int set_termios_speed(
+    ffi.Pointer<ffi.Void> data,
+    int speed,
+  ) {
+    return _set_termios_speed(
+      data,
+      speed,
+    );
+  }
+
+  late final _set_termios_speedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>, ffi.Int32)>>('set_termios_speed');
+  late final _set_termios_speed = _set_termios_speedPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
+
+  int get_termiox_flow(
+    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Int32> rts,
+    ffi.Pointer<ffi.Int32> cts,
+    ffi.Pointer<ffi.Int32> dtr,
+    ffi.Pointer<ffi.Int32> dsr,
+  ) {
+    return _get_termiox_flow(
+      data,
+      rts,
+      cts,
+      dtr,
+      dsr,
+    );
+  }
+
+  late final _get_termiox_flowPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>)>>('get_termiox_flow');
+  late final _get_termiox_flow = _get_termiox_flowPtr.asFunction<
+      int Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Int32>,
+          ffi.Pointer<ffi.Int32>,
+          ffi.Pointer<ffi.Int32>,
+          ffi.Pointer<ffi.Int32>)>();
+
+  int set_termiox_flow(
+    ffi.Pointer<ffi.Void> data,
+    int rts,
+    int cts,
+    int dtr,
+    int dsr,
+  ) {
+    return _set_termiox_flow(
+      data,
+      rts,
+      cts,
+      dtr,
+      dsr,
+    );
+  }
+
+  late final _set_termiox_flowPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Int32,
+              ffi.Int32, ffi.Int32)>>('set_termiox_flow');
+  late final _set_termiox_flow = _set_termiox_flowPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Void>, int, int, int, int)>();
+
   ffi.Pointer<ffi.Char> utils_geCurrenttLocaleName() {
     return _utils_geCurrenttLocaleName();
   }
@@ -2189,28 +2301,6 @@ class LibSerialPort {
           'utils_geCurrenttLocaleName');
   late final _utils_geCurrenttLocaleName = _utils_geCurrenttLocaleNamePtr
       .asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  late final ffi.Pointer<
-          ffi.Pointer<
-              ffi.NativeFunction<
-                  ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Size)>>>
-      _utils_debug_handler = _lookup<
-          ffi.Pointer<
-              ffi.NativeFunction<
-                  ffi.Void Function(ffi.Pointer<ffi.Char>,
-                      ffi.Size)>>>('utils_debug_handler');
-
-  ffi.Pointer<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Size)>>
-      get utils_debug_handler => _utils_debug_handler.value;
-
-  set utils_debug_handler(
-          ffi.Pointer<
-                  ffi.NativeFunction<
-                      ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Size)>>
-              value) =>
-      _utils_debug_handler.value = value;
 
   void utils_printf(
     ffi.Pointer<ffi.Char> format,
@@ -2453,11 +2543,68 @@ abstract class sp_transport {
 
 /// @struct sp_port
 /// An opaque structure representing a serial port.
-class sp_port extends ffi.Opaque {}
+class sp_port extends ffi.Struct {
+  external ffi.Pointer<ffi.Char> name;
+
+  external ffi.Pointer<ffi.Char> description;
+
+  @ffi.Int32()
+  external int transport;
+
+  @ffi.Int32()
+  external int usb_bus;
+
+  @ffi.Int32()
+  external int usb_address;
+
+  @ffi.Int32()
+  external int usb_vid;
+
+  @ffi.Int32()
+  external int usb_pid;
+
+  external ffi.Pointer<ffi.Char> usb_manufacturer;
+
+  external ffi.Pointer<ffi.Char> usb_product;
+
+  external ffi.Pointer<ffi.Char> usb_serial;
+
+  external ffi.Pointer<ffi.Char> bluetooth_address;
+
+  @ffi.Int32()
+  external int fd;
+}
 
 /// @struct sp_port_config
 /// An opaque structure representing the configuration for a serial port.
-class sp_port_config extends ffi.Opaque {}
+class sp_port_config extends ffi.Struct {
+  @ffi.Int32()
+  external int baudrate;
+
+  @ffi.Int32()
+  external int bits;
+
+  @ffi.Int32()
+  external int parity;
+
+  @ffi.Int32()
+  external int stopbits;
+
+  @ffi.Int32()
+  external int rts;
+
+  @ffi.Int32()
+  external int cts;
+
+  @ffi.Int32()
+  external int dtr;
+
+  @ffi.Int32()
+  external int dsr;
+
+  @ffi.Int32()
+  external int xon_xoff;
+}
 
 /// @struct sp_event_set
 /// A set of handles to wait on for events.
