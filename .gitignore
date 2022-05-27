@@ -30,3 +30,4 @@ build/
 
 third_party/**
 !utils
+third_party/libserialport

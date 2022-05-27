@@ -92,6 +92,25 @@
 //
 // =================================================================
 //
+// * This file is part of the libserialport project.
+// *
+// * Copyright (C) 2013 Martin Ling <martin-libserialport@earth.li>
+// * Copyright (C) 2014 Aurelien Jacobs <aurel@gnuage.org>
+// *
+// * This program is free software: you can redistribute it and/or modify
+// * it under the terms of the GNU Lesser General Public License as
+// * published by the Free Software Foundation, either version 3 of the
+// * License, or (at your option) any later version.
+// *
+// * This program is distributed in the hope that it will be useful,
+// * but WITHOUT ANY WARRANTY; without even the implied warranty of
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// * GNU General Public License for more details.
+// *
+// * You should have received a copy of the GNU Lesser General Public License
+// * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//-------------------------------------------------------------------------------
+//
 // ignore_for_file: non_constant_identifier_names, constant_identifier_names, camel_case_types
 //
 // AUTO GENERATED FILE, DO NOT EDIT.
@@ -2179,118 +2198,6 @@ class LibSerialPort {
           'sp_get_lib_version_string');
   late final _sp_get_lib_version_string = _sp_get_lib_version_stringPtr
       .asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  int get_termios_get_ioctl() {
-    return _get_termios_get_ioctl();
-  }
-
-  late final _get_termios_get_ioctlPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>(
-          'get_termios_get_ioctl');
-  late final _get_termios_get_ioctl =
-      _get_termios_get_ioctlPtr.asFunction<int Function()>();
-
-  int get_termios_set_ioctl() {
-    return _get_termios_set_ioctl();
-  }
-
-  late final _get_termios_set_ioctlPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>(
-          'get_termios_set_ioctl');
-  late final _get_termios_set_ioctl =
-      _get_termios_set_ioctlPtr.asFunction<int Function()>();
-
-  late final ffi.Pointer<ffi.Int32> _size_t = _lookup<ffi.Int32>('size_t');
-
-  int get size_t => _size_t.value;
-
-  set size_t(int value) => _size_t.value = value;
-
-  int get_termios_speed(
-    ffi.Pointer<ffi.Void> data,
-  ) {
-    return _get_termios_speed(
-      data,
-    );
-  }
-
-  late final _get_termios_speedPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-          'get_termios_speed');
-  late final _get_termios_speed =
-      _get_termios_speedPtr.asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-
-  int set_termios_speed(
-    ffi.Pointer<ffi.Void> data,
-    int speed,
-  ) {
-    return _set_termios_speed(
-      data,
-      speed,
-    );
-  }
-
-  late final _set_termios_speedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>, ffi.Int32)>>('set_termios_speed');
-  late final _set_termios_speed = _set_termios_speedPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-
-  int get_termiox_flow(
-    ffi.Pointer<ffi.Void> data,
-    ffi.Pointer<ffi.Int32> rts,
-    ffi.Pointer<ffi.Int32> cts,
-    ffi.Pointer<ffi.Int32> dtr,
-    ffi.Pointer<ffi.Int32> dsr,
-  ) {
-    return _get_termiox_flow(
-      data,
-      rts,
-      cts,
-      dtr,
-      dsr,
-    );
-  }
-
-  late final _get_termiox_flowPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>)>>('get_termiox_flow');
-  late final _get_termiox_flow = _get_termiox_flowPtr.asFunction<
-      int Function(
-          ffi.Pointer<ffi.Void>,
-          ffi.Pointer<ffi.Int32>,
-          ffi.Pointer<ffi.Int32>,
-          ffi.Pointer<ffi.Int32>,
-          ffi.Pointer<ffi.Int32>)>();
-
-  int set_termiox_flow(
-    ffi.Pointer<ffi.Void> data,
-    int rts,
-    int cts,
-    int dtr,
-    int dsr,
-  ) {
-    return _set_termiox_flow(
-      data,
-      rts,
-      cts,
-      dtr,
-      dsr,
-    );
-  }
-
-  late final _set_termiox_flowPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Int32,
-              ffi.Int32, ffi.Int32)>>('set_termiox_flow');
-  late final _set_termiox_flow = _set_termiox_flowPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Void>, int, int, int, int)>();
 
   ffi.Pointer<ffi.Char> utils_geCurrenttLocaleName() {
     return _utils_geCurrenttLocaleName();
