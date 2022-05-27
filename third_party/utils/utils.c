@@ -13,10 +13,10 @@ extern char* utils_geCurrenttLocaleName() {
 
 #if !defined(UNIVERSAL_SERIAL)
 
-static void (*utils_debug_handler)(const char *format, size_t length) = NULL;
+static void (*_utils_debug_handler)(const char *format, size_t length) = NULL;
 
 extern void utils_printf(const char *format, ...) {
-	if (utils_debug_handler == NULL) return;
+	if (_utils_debug_handler == NULL) return;
 
 	va_list args;
 	va_start(args, format);
@@ -29,17 +29,17 @@ extern void utils_printf(const char *format, ...) {
 	va_start(args, format);
 	vsnprintf(str, len, format, args);
 	va_end(args);
-	utils_debug_handler(str, len);
+	_utils_debug_handler(str, len);
 
 	free(str);
 }
 
 extern void utils_set_debug_handler(void (*handler)(const char *str, size_t length)) {
-	utils_debug_handler = handler;
+	_utils_debug_handler = handler;
 }
 
 extern void utils_init_debug() {
-	if (utils_debug_handler != NULL) {
+	if (_utils_debug_handler != NULL) {
 		sp_set_debug_handler(utils_printf);
 	}
 }
